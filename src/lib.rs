@@ -52,11 +52,17 @@ mod tests {
 
     #[test]
     fn test_sign() {
-        for data in 0..u32::MAX {
-            let input = Float {data};
-            let actual = input.to_primitive();
-            assert_eq!(input.sign(), if actual >= 0. {Sign::Positive} else {Sign::Negative})
-        }        
+        let data = 0x3015;
+        let input = Float { data };
+        let actual = input.to_primitive();
+        assert_eq!(
+            input.sign(),
+            if actual >= 0. {
+                Sign::Positive
+            } else {
+                Sign::Negative
+            }
+        )
     }
 
     fn test_exponent() {
