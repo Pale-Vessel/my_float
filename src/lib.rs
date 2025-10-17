@@ -3,15 +3,27 @@
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 enum Sign {
     Positive,
-    Negative
+    Negative,
 }
 
 #[derive(Copy, Clone)]
 struct Float {
-    data: u32
+    data: u32,
 }
 
+impl From<f32> for Float {
+    fn from(value: f32) -> Self {
+        Self {
+            data: f32::to_bits(value),
+        }
+    }
+}
 
+impl From<Float> for f32 {
+    fn from(value: Float) -> Self {
+        f32::from_bits(value.data)
+    }
+}
 
 impl Float {
     fn sign(&self) -> Sign {
@@ -25,7 +37,7 @@ impl Float {
     fn exponent(&self) -> u8 {
         ((self.data >> 23) & 0xff) as u8
     }
-    
+
     fn mantissa(&self) -> u32 {
         self.data & 0x7fffff
     }
@@ -37,20 +49,27 @@ mod tests {
 
     #[test]
     fn test_sign() {
-        let float = Float {data : 0xf0000000};
+        let float = Float { data: 0xf0000000 };
         assert_eq!(float.sign(), Sign::Negative)
     }
 
     #[test]
     fn test_exponent() {
-        #[expect(clippy::unusual_byte_groupings, reason="Separating the exponent on purpose")]
-        let float = Float {data: 0b1_01101101_00000000000000000000000};
+        #[expect(
+            clippy::unusual_byte_groupings,
+            reason = "Separating the exponent on purpose"
+        )]
+        let float = Float {
+            data: 0b1_01101101_00000000000000000000000,
+        };
         assert_eq!(float.exponent(), 0b01101101)
     }
 
     #[test]
     fn test_mantissa() {
-        let float = Float {data: 0b100000000_10101111011110110110111};
+        let float = Float {
+            data: 0b100000000_10101111011110110110111,
+        };
         assert_eq!(float.mantissa(), 0b10101111011110110110111)
     }
 }
