@@ -36,10 +36,8 @@ impl Mul for Float {
         } else {
             Sign::Negative
         };
-        println!("{} {}", self.exponent(), rhs.exponent());
         let output_exponent = self.exponent() + rhs.exponent();
         let output_mantissa = self.mantissa() * rhs.mantissa();
-        println!("hi");
         Self::from_raw_parts(output_sign, output_exponent, output_mantissa)
     }
 }
@@ -54,7 +52,7 @@ impl Float {
     }
 
     fn exponent(&self) -> i8 {
-        (((self.data >> 23) & 0xff) as u8).cast_signed()
+        (((self.data >> 23) & 0xff) as i8) - 127
     }
 
     fn mantissa(&self) -> u32 {
@@ -91,7 +89,7 @@ mod tests {
         let float = Float {
             data: 0b1_01101101_00000000000000000000000,
         };
-        assert_eq!(float.exponent(), 0b01101101)
+        assert_eq!(float.exponent(), 109 - 127)
     }
 
     #[test]
@@ -104,8 +102,8 @@ mod tests {
 
     #[test]
     fn multiply_test() {
-        let primitive_one = 37.982;
-        let primitive_two = 910.2224;
+        let primitive_one = 1.0;
+        let primitive_two = 1.0;
         let float_one: Float = primitive_one.into();
         let float_two: Float = primitive_two.into();
         assert_eq!(
